@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [
-  {name = "anonymous", email = "anonymous@anon"}
+  {name = "anonymous", email = "anonymous@anon.com"}
 ]
 keywords = ["Doubly Robust Estimation", "Overlap", "Simulation"]
 classifiers = [
