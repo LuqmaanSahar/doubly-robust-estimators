@@ -16,6 +16,28 @@
 \usepackage{multirow}
 \usepackage{hyperref}
 
+%%%%%% For including code in document
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinestyle{mypython}{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red!60!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    frame=single,
+    tabsize=4,
+    captionpos=b
+}
+%%%%%%
 
 \newcommand{\mycomment}[1]{}
 
@@ -338,6 +360,27 @@ Yang, Chengxin, Laine E. Thomas, and Fan Li.
 \newblock \emph{arXiv preprint arXiv:2602.01648}, 2026.
 
 \end{thebibliography}
+\newpage
+\appendix
+\section{Code Appendix}
 
+\subsection{\texttt{orchestrator.py}}
+The main orchestator script for running the Monte Carlo simulations.
+\lstinputlisting[style=mypython]{../src/overlapsim/orchestrator.py}
+
+\newpage
+\subsection{\texttt{module/data.py}}
+Module for the data generating process.
+\lstinputlisting[style=mypython]{../src/overlapsim/data.py}
+
+\newpage
+\subsection{\texttt{module/metrics.py}}
+Module with helper functions for computing performance metrics.
+\lstinputlisting[style=mypython]{../src/overlapsim/metrics.py}
+
+\newpage
+\subsection{\texttt{module/simulation.py}}
+Module for running full simulation runs.
+\lstinputlisting[style=mypython]{../src/overlapsim/simulation.py}
 
 \end{document}
