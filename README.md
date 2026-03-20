@@ -99,4 +99,4 @@ summary = summarise_results(results)
 
 ## License
 
-This project is licensed under the MIT license. See LICENSE for details.
+This project is licensed under the Apache-2.0 license. See LICENSE for details.

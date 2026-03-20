@@ -1,15 +1,13 @@
 name: overlapsim
 channels:
-  - https://repo.anaconda.com/pkgs/main
-  - https://repo.anaconda.com/pkgs/r
+  - conda-forge
 dependencies:
-  - seaborn
+  - python=3.12
+  - numpy
   - pandas
+  - matplotlib
+  - seaborn
+  - scikit-learn
   - jupyter
   - ipython
-  - numpy
-  - python=3.12
-  - matplotlib
-  - scikit-learn
   - econml
-prefix: /Users/lsahar/miniconda3/envs/overlapsim
