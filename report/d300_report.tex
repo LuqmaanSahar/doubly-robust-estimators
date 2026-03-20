@@ -20,27 +20,40 @@
 \newcommand{\mycomment}[1]{}
 
 \title{\textbf{Doubly Robust Estimators Under Small Overlap}}
-\author{BGN: }
+\author{BGN: 6582P}
+\date{}
 \begin{document}
 \onehalfspacing
 \maketitle
 
 \section{Introduction}
-Doubly Robust (DR) estimators protect against potential model mis-specification when conducting causal inference in a discrete treatment setting. Classical methods following Rubin’s potential outcome framework will typically model either the outcome or the treatment propensity separately. If mis-specified, the models are biased and causal effects are unidentified. On the other hand, DR estimators layer both an outcome and treatment propensity model to correct for potential biases. As long as at least one of the two models has been correctly specified we recover consistent estimates for the treatment effect.
+Doubly Robust (DR) estimators protect against potential model mis-specification when conducting causal inference in a discrete treatment setting. Parametric methods following Rubin’s potential outcome framework will typically model either the outcome or the treatment propensity separately. If mis-specified, the models are biased and causal effects are unidentified. On the other hand, DR estimators layer both an outcome and treatment propensity model to correct for potential biases. As long as at least one of the two models has been correctly specified we recover consistent estimates for the treatment effect.
 
-DR estimators still depend on key assumptions for causal identification. The stable unit treatment value (SUTVA) assumption says that potential outcomes depend only on the subjects own treatment status, and not that of others (i.e. no spillovers). Unconfoundedness requires that, once we condition on nuisance parameters, the treatment outcome is independent of actual treatment assignment. This is analogous to controlling for all endogeneity in treatment assignment. Finally, the overlap assumption says that there must be comparable individuals in both the treated and control groups who share similar nuisance parameters. This allows us to find a counterfactual by comparing similar individuals. If all three assumptions are satisfied, then the causal effects can be identified by a correctly specified model.
+DR estimators still depend on key assumptions for causal identification. The stable unit treatment value assumption (SUTVA) says that potential outcomes depend only on the subject's own treatment status, and not that of others (i.e. no spillovers). Unconfoundedness requires that, once we condition on nuisance parameters, the treatment outcome is independent of actual treatment assignment. This means controlling for all endogeneity in treatment assignment. Finally, the overlap assumption says that there must be comparable individuals in both the treated and control groups who share similar characteristics. This allows us to find a counterfactual by comparing similar individuals. If all three assumptions are satisfied, then the causal effects can be identified by a correctly specified model.
 
-However, the overlap assumption does not prescribe a minimum proportion of similar individuals that is needed to identify the causal effect. The purpose of this report is to investigate the finite sample performance of the DR estimator as overlap varies. I run a set of Monte-Carlo simulations with a correctly specified model to examine the conditional average treatment effect (CATE) and average treatment effect (ATE) as overlap worsens, either directly through the data generating process (DGP) or through variation in treatment prevalence.
+However, the overlap assumption does not prescribe a minimum proportion of similar individuals that are needed to identify the causal effect. The purpose of this report is to investigate the finite sample performance of the DR estimator as overlap varies. I run a set of Monte-Carlo simulations with a correctly specified model to examine the conditional average treatment effect (CATE) and average treatment effect (ATE) as overlap worsens, either directly through the data generating process (DGP) or through variation in treatment prevalence.
 
-I find that the bias caused by poor overlap is amplified when treatment effects are heterogeneous, and that this effect increases with the strength of heterogeneity. Additionally, I find that doubly robust learners suffer greatly in small samples when overlap is poor. This is especially true when the treatment is rare, and propensity scores are skewed. The DR estimator has good performance in very small samples only in the best overlap scenario, with very poor performance in all other scenarios.
+I find that the bias caused by poor overlap is amplified when treatment effects are heterogeneous, and that this effect increases with the strength of heterogeneity. Additionally, I find that doubly robust learners suffer greatly in small samples when overlap is poor. This is especially true when the treatment is rare, and propensity scores are skewed. On the other hand, the DR estimator is shown to make small errors when there is significant overlap, even in very small samples when treatment is strongly heterogeneous.
 
-The remainder of this report is structured as follows: chapter 2 provides a discussion of the DR estimator’s finite sample performance, chapter 3 describes the data generating process and methodology, chapter 4 presents the results from the Monte-Carlo simulations, and chapter 5 is a discussion of the findings.
+This suggests that the DR estimator is a strong candidate for causal inference when overlap is strong and sample size is small, as it offers us protection against model misspecification. However, as overlap deteriorates the errors from adding heterogeneity are amplified in finite samples. This makes a strong case for parametric methods when overlap is less certain, as parametric models do not amplify this bias.
 
-\section{Finite Sample Performance of the DR Estimator}
+The remainder of this report is structured as follows: chapter 2 provides a discussion of the DR estimator’s finite sample performance, chapter 3 describes the data generating process and methodology, chapter 4 presents the results from the Monte Carlo simulations, and chapter 5 is a discussion of the findings.
+
+\section{Background}
+
+\subsection{Literature Review}
+
+The topic of poor overlap has been extensively explored for parametric methods. (Li et al., 2019) and (Zhou et al., 2020) explore alternative remedies for inverse probability weight (IPW) models. They suggest trimming tails of the propensity distribution, overlap weighting, entropy weighting, and switching to a matching model based on propensity scores. Both studies find overlap weights to achieve the lowest errors in finite samples.
+
+(Yang et al., 2026) runs Monte Carlo simulations using the DR estimator for a homogeneous treatment, and compare it against the individual outcome and propensity models. They find that the IPW model is particularly sensitive to poor overlap and performs worse than the DR estimator. However, the outcome model outperforms the DR estimator when overlap is particularly bad.
+
+So far, no study has investigated the role of overlap for the DR estimator when treatment effects are heterogeneous.
+
+\subsection{Finite Sample Performance of the DR Estimator}
 
 The DR estimator provides protection against model mis-specification by including both an outcome model and a propensity model for the ATE. This allows each model to correct the potential bias from mis-specification from the other, leading to consistent estimates as long as one of the models has been correctly specified. Additionally, as long as both models converge at a rate of at least $n^{-1/4}$, then the DR estimator is convergent at a rate of $n^{-1/2}$. This makes the DR estimator an appealing strategy when the true outcome and propensity models are unknown.
 
-The doubly-robust estimator in this report uses augmented inverse probability weighting (AIPW) [Bang and Robins, 2005]. The estimate for the ATE is given by:
+The doubly-robust estimator in this report uses augmented inverse probability weighting (AIPW) (Bang and Robins, 2005). The estimate for the ATE is given by:
 
 $$
 \hat{\tau}_{DR}
@@ -56,15 +69,15 @@ $$
 \right\}.
 $$
 
-For each term in the expression, the first component is from the outcome model, and the second is from the propensity model on the residuals. $\hat{m}_{d}(X_{i})$ is the fitted outcome for binary treatment $d$ under the outcome model. $\hat{e}_i$ denotes the propensity score, which is usually unobserved.
+For each term in the expression, the first component is from the outcome model, and the second is from the propensity model on the residuals. $\hat{m}_{d}(X_{i})$ is the fitted outcome for binary treatment $d$ under the outcome model. $\hat{e}(X_{i})$ denotes the propensity score, which is usually unobserved.
 
 $$
-Propensity Score=P(D=1\mid X_i).
+\hat{e}(X_{i})=P(D_{i}=1\mid X_i).
 $$
 
 $X_{i}$ are the set of characteristics (or nuisance parameters) that we condition on, and $n$ is the sample size.
 
-(Yang et al., 2026) provide a useful finite sample decomposition of the model error into the residuals originating from the propensity and outcome models separately. Let $\tau_{S}$ denote the true sample ATE. Then, the model error can be defined as $\hat{\tau}_{DR} - \tau_{S}$, which can be written as:
+(Yang et al., 2026) provide a useful finite sample decomposition of the model error into the residuals originating from the propensity and outcome models separately. Let $\tau_{S} = \frac{1}{n}\sum_{i=1}^{n}(Y_{i}(1) - Y_{i}(0))$ denote the true sample ATE. Then, the model error can be defined as $\hat{\tau}_{DR} - \tau_{S}$, which can be written as:
 
 $$
 \hat{\tau}_{DR}-\tau_S
@@ -109,11 +122,13 @@ Additionally, the outcome residual is increasing in the actual outcome model err
 
 Finally, the outcome residual and the propensity residual are multiplied to produce the DR model error. This suggests that the individual model errors are amplified by one another; hence, we should expect to see that the errors arising from heterogeneity are amplified by the model, leading to worse finite sample estimates as the degree of heterogeneity increases and the outcome model makes larger errors. Even when the DR model has been correctly specified, this error amplification could lead to inaccurate estimates when heterogeneity is present and overlap is poor.
 
+The key insight from this is that the DR estimator is amplifying the errors from the outcome and propensity models; hence, errors arising from poor overlap and heterogeneity will in general be larger in finite samples.
+
 
 \section{Methodology}
 
 \subsection{Data Generating Process}
-I run a set of Monte-Carlo simulations using a correctly specified DR learner. I generate data in-line with (Li et al., 2019) and (Yang et al., 2026) to ensure that results are comparable. The key departure is the inclusion of heterogeneity in the strength of treatment. Rather than a binary 0/1 treatment, I allow the treatment effect to vary based on individual features.
+I run a set of Monte-Carlo simulations using a correctly specified DR estimator. I generate data in-line with (Li et al., 2019) and (Yang et al., 2026) to ensure that results are comparable. The key departure is the inclusion of heterogeneity in the strength of treatment. Rather than a binary 0/1 treatment, I allow the treatment effect to vary based on individual features.
 
 In particular, I draw six latent variables from a multivariate Gaussian distribution with zero mean, unit marginal variance, and pairwise correlations of 0.5. The latter three variables are then transformed into binary features taking zero values if below zero, and 1 otherwise.
 
@@ -129,20 +144,14 @@ d\left(
 \right).
 $$
 
-Where $e(X, \beta)$ are true propensity scores generated by the logistic function:
-
-$$
-e(X,\beta)=\frac{1}{1+\exp(-\beta^{\top}X)}.
-$$
-
-$d$ is a parameter controlling the degree of overlap in the sample. Higher values of $d$ indicate worse overlap as propensity scores are pushed to 0 and 1. I also consider two different treatment prevalence rates, which also have an impact on overlap. Lower prevalence (rare treatment) worsens overlap as propensity scores are skewed toward 0. I achieve the desired treatment propensity by shifting the intercept term in the propensity model. This creates four overlap scenarios:
+$d$ is a parameter controlling the degree of overlap in the sample. Higher values of $d$ indicate worse overlap as propensity scores are pushed closer to the extremes at 0 and 1. I also consider two different treatment prevalence rates, which also have an impact on overlap. Lower prevalence (rare treatment) worsens overlap as propensity scores are skewed toward 0. I achieve the desired treatment propensity by shifting the intercept term $\alpha_0$ in the propensity model. This creates four overlap scenarios:
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=1\textwidth]{Figure1}
 \end{figure}
 
-The top panels show scenarios when treatment prevalence is 40\%. The right side panels show when overlap is low. Accordingly, the top-left panel shows the best overlap scenario. On the other hand, the lower-right panel shows the worst overlap. That is, when treatment is rare and propensity scores are skewed toward zero for the control group only.
+The top panels show scenarios when treatment prevalence is 40\%. The right side panels show when overlap is low. Accordingly, the top-left panel shows the best overlap scenario and the lower-right panel shows the worst overlap. That is, when treatment is rare and propensity scores are skewed toward zero for the control group.
 
 The untreated potential outcomes are given by a linear function of the following form:
 
@@ -183,7 +192,7 @@ $$
 
 I take the average RMSE across all replications and call this metric (CATE RMSE). This captures the model’s error in estimating heterogeneous treatment effects.
 
-The ATE can be computed by applying the Law of Iterated Expectations, and taking the mean over all CATEs for each replication. I compute the bias as the difference between the estimated and actual ATE. I take the mean over all replications and call this metric (ATE bias). This captures the size and direction of bias for the model’s average predictions.
+The estimated sample ATE can be computed by applying the Law of Iterated Expectations, and taking the mean over all CATEs for each replication. I compute the bias as the difference between the estimated and actual sample ATE $\tau_{S}$. I take the mean over all replications and call this metric (ATE bias). This captures the size and direction of bias for the model’s average predictions.
 
 Finally, I use ATE bias to compute the RMSE for ATE as:
 
@@ -255,14 +264,14 @@ I replicate each simulation 1000 times and report the main results using a sampl
     \end{tabular}
     \begin{tablenotes}
         \scriptsize
-        \item \parbox{1.2\textwidth}{\textit{Results shown for sample of 1000. When treatment prevalence is low and overlap is poor, we essentially face a full violation \\of the overlap assumption. The model is completely unable to identify the CATEs.}}
+        \item \parbox{1.2\textwidth}{\textit{Results shown for sample of 1000. When treatment prevalence is low and overlap is poor, we essentially face a full violation \\of the overlap assumption. The model is completely unable to identify the CATEs or ATE.}}
     \end{tablenotes}
     \end{threeparttable}}
 \end{table}
 
-Table 1a shows results when treatment prevalence is 40\%. The first row shows a baseline model performance when no heterogeneity is present. These results have negligible difference those presented in (Yang et al., 2026) which reassures us that the data generating process and methodology are consistent with this paper.
+Table 1a shows results when treatment prevalence is 40\%. The first row shows a baseline model performance when no heterogeneity is present. These results are negligibly different from those presented in (Yang et al., 2026) which reassures us that the data generating process and methodology are consistent with this paper.
 
-As heterogeneity increases, we observe that the model errors also increase, all else being equal. Looking at the left-hand side of the table (when overlap is at its best) we see that the errors from increased heterogeneity remain small.
+As heterogeneity increases, we observe that the model errors also increase, all else being equal. Focusing on the left-hand side columns (when overlap is at its best) we see that the errors from increased heterogeneity remain small as we move down the table.
 
 The right-hand side columns show the same models estimated when overlap is poor. Firstly, the top row shows that, when there is no heterogeneity, poor overlap alone causes higher model errors. Secondly, we observe that the errors arising from heterogeneity are amplified compared to the case with good overlap. Additionally, when heterogeneity is at its strongest, the CATE RMSE increases by almost 50\% relative to the next highest heterogeneity level. This suggests that greater heterogeneity paired with poor overlap can lead to substantial model errors, even when treatment prevalence is relatively balanced.
 
@@ -286,24 +295,49 @@ Figure 2 shows that, in general, greater heterogeneity leads to greater model er
 
 On the other hand, when overlap is very good the DR estimator is shown to achieve a low RMSE in small samples even when heterogeneity is present. This suggests that heterogeneity is not an issue when overlap between subjects is clearly satisfied. We may be content with a smaller sample if we can show clear overlap.
 
-Figure 3 shows the case when treatment prevalence is rare. Note that this is on a different scale due to the fact that model RMSE explodes in very small sample sizes. In general, when overlap is poor and treatment is rare, the sample size must be high enough such that the treated population has enough variation for the causal effect to be estimated. In small samples, a 10\% prevalence makes up a very small number of observations (30-50 treated). Additionally, the model error arising from heterogeneity is shown to be much higher when sample size is small.
+Figure 3 shows the case when treatment prevalence is rare. Note that this is on a different scale due to the fact that model RMSE explodes in very small sample sizes. In general, when overlap is poor and treatment is rare, the sample size must be high enough such that the treated population has enough variation for the causal effect to be estimated. In small samples, a 10\% prevalence makes up a very small number of observations (around 30-50 treated). Additionally, the model error arising from heterogeneity is shown to be much higher when sample size is small.
 
 \section{Discussion}
 
-Overall, the simulation results agree with the hypothesis that errors arising from heterogeneity are amplified by the DR estimator, causing large model errors when overlap is poor. In particular, stronger heterogeneity leads to greater model errors, which are amplified when overlap is poor. This motivates additional caution when estimating heterogeneous treatment effects with the DR estimator when the overlap assumption is uncertain.
+Overall, the simulation results agree with the hypothesis that errors arising from heterogeneity are amplified by the DR estimator, causing large model errors. In particular, stronger heterogeneity leads to greater model errors, which are amplified when overlap is poor. This motivates additional caution when estimating heterogeneous treatment effects with the DR estimator when satisfaction of the overlap assumption is uncertain.
 
-Additionally, I found that the errors from heterogeneity are greater in smaller samples. This agrees with the intuition that a smaller population provides less variation to identify individual treatment effects. However, I found that this is not such an issue when the overlap assumption is comfortably satisfied. In the best overlap scenario, I showed that the CATE RMSE remains low even when there are strongly heterogeneous effects. This highlights that the only case when we may be satisfied with a small sample is when SUTVA and unconfoundedness are satisfied, and there is substantial overlap between groups. As overlap worsens, so does finite-sample performance.
+Additionally, I find that the errors from heterogeneity are greater in smaller samples. This agrees with the intuition that a smaller population provides less variation to identify individual treatment effects. However, I found that this is not such an issue when the overlap assumption is comfortably satisfied. In the best overlap scenario, I showed that the CATE RMSE remains low even when there are strongly heterogeneous effects. This highlights that the only case when we may be satisfied with a small sample is when SUTVA and unconfoundedness are satisfied, and there is substantial overlap between groups. As overlap worsens, so does finite-sample performance.
 
 Finally, I found that the overlap scenario where propensities are concentrated near zero is particularly fatal to the DR estimator. Regardless of the degree of heterogeneity, the DR model was unable to identify the causal effect when treatment prevalence was low and propensities were skewed. This again agrees with the hypothesis that the DR model amplifies errors from the outcome and propensity models, and that these errors are pronounced when propensities take on extreme values.
 
 In light of these findings, it is clear that one should take caution with DR estimators when it is suspected that overlap is poor and heterogeneity is present. The DR estimator on its own is not equipped to deal with this issue. (Yang et al., 2026) suggest that the best way to deal with this issue is to shift the target population onto one where overlap is better. One method is by trimming the tails of the propensity distribution to remove the extreme propensity scores that are causing the largest model errors. This is shown to work, but it is undesirable in small samples as it entails removing a portion of the data.
 
-(Li et al., 2019) discusses overlap weights as a potential remedy to poor overlap for the inverse probability weights estimator. This entails weighting each observation by down-weighting observations in the tails and up-weighting observations with high overlap. This reduces model error from poor overlap without removing observations.
+(Zhou et al., 2020) discusses overlap weights as a potential remedy to poor overlap for the inverse probability weights estimator. This entails down-weighting observations in the tails and up-weighting observations with high overlap. This reduces model error from poor overlap without removing observations.
 
 Further research could investigate how effective these methods are when applied to the DR estimator with heterogeneous treatment effects, and how this varies for samples of different sizes.
 
-In conclusion, I have shown that heterogeneous effects cause greater model errors for the DR estimator in finite samples, and that this error is amplified when overlap is poor. The errors from heterogeneity and poor overlap are particularly pronounced in small samples, and when treatment is rare. This motivates greater caution to be taken when using doubly robust methods to estimate causal effects in finite samples where there is significant heterogeneity and poor overlap.
+In conclusion, I have shown that heterogeneous effects cause greater model errors for the DR estimator in finite samples, and that this error is amplified when overlap is poor. The errors from heterogeneity and poor overlap are particularly pronounced in small samples, and when treatment is rare. This error amplification arises only due to the combination of an output and propensity model; hence, parametric methods should be strongly considered in such applications. On the other hand, when overlap is comfortably satisfied the DR estimator is shown to perform well even with heterogeneous treatment effects in small samples, and has the additional benefit of protecting against model misspecification.
 
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{li2019overlap}
+Li, Fan, Laine E. Thomas, and Fan Li.
+\newblock Addressing extreme propensity scores via the overlap weights.
+\newblock \emph{American Journal of Epidemiology}, 188(1):250--257, 2019.
+
+\bibitem{bang2005doubly}
+Bang, Heejung, and James M. Robins.
+\newblock Doubly robust estimation in missing data and causal inference models.
+\newblock \emph{Biometrics}, 61(4):962--973, 2005.
+
+\bibitem{zhou2020propensity}
+Zhou, Yunji, Roland A. Matsouaka, and Laine E. Thomas.
+\newblock Propensity score weighting under limited overlap and model misspecification.
+\newblock \emph{Statistical Methods in Medical Research}, 29(12):3721--3756, 2020.
+\newblock PMID: 32693715.
+
+\bibitem{yang2026demystify}
+Yang, Chengxin, Laine E. Thomas, and Fan Li.
+\newblock Demystify doubly-robust estimation: The role of overlap.
+\newblock \emph{arXiv preprint arXiv:2602.01648}, 2026.
+
+\end{thebibliography}
 
 
 \end{document}
