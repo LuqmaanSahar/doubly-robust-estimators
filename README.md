@@ -6,7 +6,7 @@
 
 Coursework for the D300 module in Mphil Economics and Data Science
 
-I run Monte Carlo simulations to investigate the finite sample performance of the doubly robust estimator when treatment effects are heterogeneous and overlap is poor. My approcah to simulations are based on: *Yang, Chengxin, Laine E. Thomas, and Fan Li. "Demystify Doubly-Robust Estimation: The Role of Overlap." arXiv preprint arXiv:2602.01648 (2026).*
+I run Monte Carlo simulations to investigate the finite sample performance of the doubly robust estimator when treatment effects are heterogeneous and overlap is poor. My approach to simulations are based on: *Yang, Chengxin, Laine E. Thomas, and Fan Li. "Demystify Doubly-Robust Estimation: The Role of Overlap." arXiv preprint arXiv:2602.01648 (2026).*
 
 The final report and figures can be found in the `report` folder.
 
